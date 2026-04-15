@@ -1,0 +1,62 @@
+config/config.yaml
+bin/
+*.exe
+vendor/
+
+# 编译输出 / 二进制文件
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+bin/
+build/
+dist/
+out/
+
+# Go 编译缓存
+/obj/
+/go-build/
+/testdata/
+
+# Go 模块
+vendor/
+go.work.sum
+
+# 编辑器配置
+.idea/
+*.swp
+*.swo
+*~
+
+# 系统文件
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# 日志文件
+*.log
+logs/
+*.tmp
+*.temp
+
+# 配置文件（敏感信息）
+*.env
+.env
+.env.*
+!.env.example
+
+# 测试覆盖率
+coverage.out
+coverage.txt
+profile.out
+
+# 临时文件
+*.tar.gz
+*.zip
+*.rar
+*.bak

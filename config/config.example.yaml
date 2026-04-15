@@ -1,0 +1,12 @@
+version: v1
+server:
+  listen: ":8080"
+  read_timeout: "30s"
+  write_timeout: "120s"
+
+providers:
+  - name: qwen-online
+    base_url: "https://dashscope.aliyuncs.com/compatible-mode/v1"
+    api_key: "${OPENAI_API_KEY}"
+    models: ["qwen-turbo", "qwen-plus", "qwen-max"]
+    timeout: "30s"
