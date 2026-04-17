@@ -19,7 +19,7 @@ func TestProxyHandler(t *testing.T) {
 	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusOK)
-		json.NewEncoder(w).Encode(map[string]any{
+		_ = json.NewEncoder(w).Encode(map[string]any{
 			"id":      "test-123",
 			"choices": []map[string]any{{"message": map[string]string{"content": "pong"}}},
 		})

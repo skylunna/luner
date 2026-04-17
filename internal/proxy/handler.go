@@ -153,7 +153,7 @@ func (h *Handler) executeWithRetry(req *http.Request, maxRetries int) (*http.Res
 		}
 
 		// 5xx 错误：消费 body、关闭连接、准备重试
-		io.Copy(io.Discard, resp.Body)
+		_, _ = io.Copy(io.Discard, resp.Body)
 		resp.Body.Close()
 		lastResp = resp
 		lastErr = nil
