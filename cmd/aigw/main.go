@@ -11,7 +11,9 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/skylunna/ai-gateway/internal/cache"
 	"github.com/skylunna/ai-gateway/internal/config"
+	"github.com/skylunna/ai-gateway/internal/limiter"
 	"github.com/skylunna/ai-gateway/internal/metrics"
 	"github.com/skylunna/ai-gateway/internal/proxy"
 	"github.com/skylunna/ai-gateway/internal/trace"
@@ -50,10 +52,25 @@ func main() {
 		logger.Error("failed to init OpenTelemetry", "err", err)
 		os.Exit(1)
 	}
+	cfg := loader.Get()
+	var gwCache *cache.LRU
+	if cfg.Cache.Enabled {
+		gwCache = cache.NewLRU(cfg.Cache.MaxItems, cfg.Cache.TTL)
+		logger.Info("LRU cache enabled", "capacity", cfg.Cache.MaxItems, "ttl", cfg.Cache.TTL)
+	}
+
+	// 初始化限流器
+	gwLimiter := limiter.NewManager()
+	if cfg.RateLimit.Enabled {
+		for _, rl := range cfg.RateLimit.Providers {
+			gwLimiter.SetBucket(rl.Name, limiter.NewBucket(float64(rl.Burst), rl.QPS))
+		}
+		logger.Info("rate limiter enabled", "providers", len(cfg.RateLimit.Providers))
+	}
 
 	// 6. 注册路由
 	mux := http.NewServeMux()
-	mux.Handle("/v1/chat/completions", proxy.NewHandler(loader, logger))
+	mux.Handle("/v1/chat/completions", proxy.NewHandler(loader, logger, gwCache, gwLimiter))
 	mux.Handle("/metrics", metrics.Handler())
 	mux.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -61,7 +78,7 @@ func main() {
 	})
 
 	// 7. 构建 HTTP Server（注意：网络层参数不支持热重载，需重启生效）
-	cfg := loader.Get()
+
 	server := &http.Server{
 		Addr:         cfg.Server.Listen,
 		Handler:      mux,

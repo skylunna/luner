@@ -10,3 +10,15 @@ providers:
     api_key: "${OPENAI_API_KEY}"
     models: ["qwen-turbo", "qwen-plus", "qwen-max"]
     timeout: "30s"
+
+cache:
+  enabled: true
+  max_items: 5000
+  default_ttl: "2h"
+
+rate_limit:
+  enabled: true
+  providers:
+    - name: openai-prod
+      qps: 50.0
+      burst: 10

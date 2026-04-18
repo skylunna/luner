@@ -10,7 +10,9 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/skylunna/ai-gateway/internal/cache"
 	"github.com/skylunna/ai-gateway/internal/config"
+	"github.com/skylunna/ai-gateway/internal/limiter"
 	"github.com/skylunna/ai-gateway/internal/metrics"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -22,16 +24,20 @@ import (
 var tracer = otel.Tracer("ai-gateway-proxy")
 
 type Handler struct {
-	loader *config.Loader
-	client *http.Client
-	logger *slog.Logger
+	loader  *config.Loader
+	client  *http.Client
+	logger  *slog.Logger
+	cache   *cache.LRU
+	limiter *limiter.Manager
 }
 
-func NewHandler(loader *config.Loader, logger *slog.Logger) *Handler {
+func NewHandler(loader *config.Loader, logger *slog.Logger, c *cache.LRU, lm *limiter.Manager) *Handler {
 	return &Handler{
-		loader: loader,
-		client: &http.Client{},
-		logger: logger,
+		loader:  loader,
+		client:  &http.Client{},
+		logger:  logger,
+		cache:   c,
+		limiter: lm,
 	}
 }
 
@@ -64,6 +70,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	model, _ := reqPayload["model"].(string)
 	stream, _ := reqPayload["stream"].(bool)
+	temp, _ := reqPayload["temperature"].(float64)
 
 	if model == "" {
 		metrics.RequestTotal.WithLabelValues("unknown", "unknown", "400").Inc()
@@ -82,6 +89,30 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	span.SetAttributes(attribute.String("llm.provider", provider.Name))
+
+	// 限流检查
+	if h.limiter != nil {
+		bucket := h.limiter.GetBucket(provider.Name)
+		if bucket != nil && !bucket.Allow() {
+			metrics.RequestTotal.WithLabelValues(model, provider.Name, "429").Inc()
+			h.writeError(w, "rate limit exceeded", http.StatusTooManyRequests)
+			return
+		}
+	}
+
+	// 缓存检查 (仅非流式)
+	if h.cache != nil && !stream {
+		msgJSON, _ := json.Marshal(reqPayload["messages"])
+		cacheKey := cache.GenerateKey(model, msgJSON, temp)
+		if cached, ok := h.cache.Get(cacheKey); ok {
+			span.SetAttributes(attribute.Bool("cache.hit", true))
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			w.Write(cached)
+			metrics.RequestTotal.WithLabelValues(model, provider.Name, "200-cache").Inc()
+			return
+		}
+	}
 
 	// 4. 构造上游请求
 	timeout := provider.Timeout
@@ -132,10 +163,15 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
 	w.WriteHeader(resp.StatusCode)
 
-	if !stream {
+	if !stream && h.cache != nil {
 		respBody, err := io.ReadAll(resp.Body)
 		if err == nil {
 			_, _ = w.Write(respBody)
+			// 缓存成功响应
+			msgJSON, _ := json.Marshal(reqPayload["messages"])
+			cacheKey := cache.GenerateKey(model, msgJSON, temp)
+			h.cache.Set(cacheKey, respBody)
+			span.SetAttributes(attribute.Bool("cache.set", true))
 			h.parseAndRecordTokens(model, respBody)
 		} else {
 			span.RecordError(err)

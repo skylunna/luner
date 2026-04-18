@@ -23,6 +23,25 @@ type Config struct {
 	Version   string           `yaml:"version"`
 	Server    ServerConfig     `yaml:"server"`
 	Providers []ProviderConfig `yaml:"providers"`
+	Cache     CacheConfig      `yaml:"cache"`
+	RateLimit RateLimitConfig  `yaml:"rate_limit"`
+}
+
+type CacheConfig struct {
+	Enabled  bool          `yaml:"enabled"`     // 是否启用缓存
+	MaxItems int           `yaml:"max_items"`   // 最大缓存条数
+	TTL      time.Duration `yaml:"default_ttl"` // 默认缓存过期时间
+}
+
+type RateLimitConfig struct {
+	Enabled   bool                `yaml:"enabled"`   // 是否启用速率限制
+	Providers []ProviderRateLimit `yaml:"providers"` // 每个厂商的速率限制配置
+}
+
+type ProviderRateLimit struct {
+	Name  string  `yaml:"name"`  // 厂商名
+	QPS   float64 `yaml:"qps"`   // 每秒请求数
+	Burst int     `yaml:"burst"` // 突发请求数
 }
 
 // 网关 HTTP 服务的配置。
@@ -75,6 +94,12 @@ func Load(path string) (*Config, error) {
 	}
 	if cfg.Server.WriteTimeout == 0 {
 		cfg.Server.WriteTimeout = 120 * time.Second
+	}
+	if cfg.Cache.MaxItems == 0 {
+		cfg.Cache.MaxItems = 5000
+	}
+	if cfg.Cache.TTL == 0 {
+		cfg.Cache.TTL = 2 * time.Hour
 	}
 
 	return &cfg, nil
