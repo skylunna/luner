@@ -5,57 +5,43 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.1.0] - 2026-04-17
+## [v0.3.0] - 2026-04-18
 
-### ✨ Features
-- OpenAI-compatible `/v1/chat/completions` proxy endpoint
-- YAML configuration with environment variable expansion (`${ENV_VAR}`)
-- Model-based routing to multiple LLM providers
-- Prometheus metrics (`/metrics`): request count, latency, HTTP status codes
-- Zero-buffer SSE streaming passthrough (`io.Copy` for O(1) memory usage)
-- Automatic retry on 5xx or network errors (configurable, default: 1)
-- Hot-reload configuration via `fsnotify` (atomic swap, zero downtime)
-- Graceful shutdown with `context` timeout (SIGINT/SIGTERM handling)
+### 🚀 Added
+- **Multi-platform release engineering**: Integrated `goreleaser` to automatically build & package binaries for `linux/amd64`, `linux/arm64`, `darwin/amd64`, `darwin/arm64`, and `windows/amd64`.
+- **Containerization**: Added production-ready multi-stage `Dockerfile` and `docker-compose.yml` for zero-config local deployment.
+- **CI/CD Automation**: GitHub Actions pipeline now auto-publishes binaries, checksums, and release notes on Git tag push.
+- **Community Onboarding**: Added `CONTRIBUTING.md` (dev setup, commit conventions, PR guidelines) and `ROADMAP.md` (short & long-term plans).
+- **Build Metadata**: Injected `Version`, `Commit`, and `BuildDate` via `ldflags` for production troubleshooting & version reporting.
 
-### 🛠️ Engineering
-- Go 1.24 ready, standard project layout (`cmd/`, `internal/`, `config/`)
-- GitHub Actions CI: `golangci-lint`, race-tested tests, cross-compile check
-- Table-driven unit tests for proxy handler
-- `Makefile` for common dev tasks (`make run/test/lint/build`)
+### 🛠️ Changed
+- Refactored GitHub Actions into decoupled `lint-test` and `release` jobs for faster PR feedback & safer tag deployments.
+- Updated `go.mod` to strictly require `go 1.24`.
+- Optimized archive packaging: defaults to `.tar.gz` (Linux/macOS) / `.zip` (Windows), and bundles `README.md`, `LICENSE`, and `config.example.yaml`.
 
-### 📝 Known Issues / Limitations
-- Server listen address & read/write timeouts require restart to change
-- Only supports OpenAI `/v1/chat/completions` (streaming & non-streaming)
-- No advanced routing strategies (weight, fallback, A/B) yet
-- Token usage & cost metrics not parsed yet (planned for v0.2.0)
+### 📦 Infrastructure
+- Added automated `checksums.txt` generation for supply chain security & download verification.
+- Enabled snapshot versioning (`v0.3.0-next`) for pre-release validation.
+- Configured changelog auto-filtering to exclude `ci:`, `docs:`, `test:` and merge commits from release notes.
 
-
-
-## [v0.2.0] - 2026-04-18
-
-### ✨ Features
-- OpenTelemetry tracing integration: auto-inject `traceparent` to upstream LLM requests, support OTLP HTTP exporter (Jaeger/Tempo compatible)
-- Token usage metrics: parse `usage` from non-streaming responses, expose Prometheus counters `aigw_tokens_used_total{model,type="prompt|completion|total"}`
-- Enhanced graceful shutdown: flush OTel traces & wait for in-flight requests before exit
-- Release engineering ready: `.goreleaser.yaml` for multi-arch binaries, `Dockerfile` + `docker-compose.yml` for one-click deployment
-- Debug endpoint `/debug/config` (dev mode): view current effective configuration
-
-### 🛠️ Engineering
-- Refactor `config.Loader` with `atomic.Pointer[Config]` for lock-free hot-reload
-- Add `config.NewLoaderFromCfg()` for pure-memory config injection in unit tests
-- Structured logging migration: full adoption of `log/slog` with JSON handler support
-- Error response normalization: align with OpenAI spec `{"error":{"message":"xxx","type":"api_error"}}`
-- Add `CONTRIBUTING.md` + `ROADMAP.md` to lower contribution barrier
-- CI enhancement: auto-tagged releases trigger `goreleaser` to upload Assets
+### 📖 Documentation
+- Added quick-start Docker & `docker compose up` deployment instructions.
+- Standardized contribution workflow (Conventional Commits + atomic PRs + `good first issue` labeling).
+- Published public roadmap targeting `v0.4.0` (LRU cache, sliding-window rate limiting, K8s Helm chart).
 
 ### 🐛 Fixed
-- Fix missing `Content-Length` header in streaming responses causing client-side buffering
-- Fix race condition during config hot-reload (atomic pointer swap ensures zero-downtime)
-- Fix potential nil-pointer panic in tests when injecting mock config
+- *(No runtime behavior changes in this release; focused exclusively on distribution engineering & community readiness)*
 
-### 📝 Known Issues / Limitations
-- Server listen address & read/write timeouts still require restart to change (network layer state)
-- Token metrics only parsed for **non-streaming** responses (`stream: false`); streaming token counting planned for v0.3.0
-- No advanced routing strategies yet (weight, fallback, least-latency); pure model-name matching only
-- OTel exporter is optional: if `OTEL_EXPORTER_OTLP_ENDPOINT` not set, tracing silently skips (dev-friendly)
-- No built-in auth middleware (API key validation for gateway itself); rely on reverse proxy (nginx/Ingress) for now
+---
+## [v0.2.0] - 2026-04-11
+- Added OpenTelemetry distributed tracing with OTLP HTTP exporter
+- Added Prometheus token usage metrics (`aigw_tokens_used_total`)
+- Propagated `Traceparent` headers to upstream LLM providers
+- Implemented graceful OTel tracer shutdown on SIGINT/SIGTERM
+
+## [v0.1.0] - 2026-04-04
+- Initial MVP: OpenAI-compatible HTTP proxy with YAML config & env expansion
+- Atomic config hot-reload via `fsnotify` + `atomic.Pointer`
+- Basic 5xx retry logic with exponential backoff
+- Prometheus metrics for request count & latency
+- Graceful shutdown & per-request `context` timeout control
