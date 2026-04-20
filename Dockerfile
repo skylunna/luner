@@ -7,7 +7,7 @@ COPY . .
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags="-s -w" -o /aigw ./cmd/aigw
 
 # 阶段 2: 运行（最小化运行时）
-FROM alpine:3.20
+FROM alpine:3.23
 RUN apk --no-cache add ca-certificates tzdata curl
 WORKDIR /app
 COPY --from=builder /aigw .
