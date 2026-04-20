@@ -5,7 +5,7 @@
 
 version: 2
 updates:
-  # 强制刷新: 2026-04-20  <-- 加这行注释
+  
   - package-ecosystem: "gomod"
     directory: "/"
     schedule:
@@ -13,24 +13,49 @@ updates:
       day: "monday"
       time: "09:00"
       timezone: "Asia/Shanghai"
-    open-pull-requests-limit: 5
+    open-pull-requests-limit: 20
     labels:
       - "dependencies"
       - "go"
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
-
+    
+  
+    groups:
+      otel-minor-patch:
+        patterns: ["go.opentelemetry.io/*"]
+        update-types: ["minor", "patch"]
+      golang-x-minor-patch:
+        patterns: ["golang.org/x/*"]
+        update-types: ["minor", "patch"]
+      prometheus-minor-patch:
+        patterns: ["github.com/prometheus/*"]
+        update-types: ["minor", "patch"]
+      google-api-minor-patch:
+        patterns: ["google.golang.org/*"]
+        update-types: ["minor", "patch"]
+    
+   
     ignore:
       - dependency-name: "go"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "docker"
     directory: "/"
     schedule: { interval: "weekly" }
     labels: ["dependencies", "docker"]
-
+    
+    ignore:
+      - dependency-name: "golang"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule: { interval: "weekly" }
     labels: ["ci", "dependencies"]
+    
+    groups:
+      actions-minor-patch:
+        patterns: ["*"]
+        update-types: ["minor", "patch"]
