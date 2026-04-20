@@ -1,6 +1,6 @@
 module github.com/skylunna/ai-gateway
 
-go 1.24.1
+go 1.24
 
 require (
 	github.com/fsnotify/fsnotify v1.9.0
