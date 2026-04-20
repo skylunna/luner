@@ -20,7 +20,9 @@ updates:
     commit-message:
       prefix: "chore(deps)"
       include: "scope"
-    
+
+    ignore:
+    - dependency-name: "go"
   
     groups:
       otel-minor-patch:
