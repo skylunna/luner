@@ -9,7 +9,7 @@ on:
     types: [created]
 
 jobs:
-  # 日常质量门禁
+ 
   lint-test:
     runs-on: ubuntu-latest
     steps:
@@ -28,7 +28,7 @@ jobs:
       - name: Build
         run: go build -o /dev/null ./cmd/aigw
 
-  # 仅 Tag 触发自动发布
+
   release:
     needs: lint-test
     if: startsWith(github.ref, 'refs/tags/')
