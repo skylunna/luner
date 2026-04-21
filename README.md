@@ -18,12 +18,12 @@ A lightweight, production-ready LLM API gateway built with Go 1.24. Seamlessly p
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/your-org/ai-gateway/releases)
 
 
-- 🔄 **OpenAI Compatible**: Drop-in replacement for `base_url`. Zero code changes for existing Python/Node.js SDKs.
-- ⚡ **High Performance**: Zero-dependency LRU cache + token-bucket rate limiting. Pure Go, constant memory footprint.
-- 🔥 **Hot-Reload Configuration**: Atomic config updates via `fsnotify` & `atomic.Pointer`. Zero downtime routing changes.
-- 📊 **Full Observability**: OpenTelemetry tracing + Prometheus metrics (latency, token usage, cache hits, rate limits).
-- 🐳 **Cloud-Native Ready**: Multi-arch binaries, multi-stage Dockerfile, `docker-compose` out-of-the-box.
-- 🔒 **Secure by Design**: Environment variable injection, `.env` templating, 12-Factor App compliant.
+- **OpenAI Compatible**: Drop-in replacement for `base_url`. Zero code changes for existing Python/Node.js SDKs.
+- **High Performance**: Zero-dependency LRU cache + token-bucket rate limiting. Pure Go, constant memory footprint.
+- **Hot-Reload Configuration**: Atomic config updates via `fsnotify` & `atomic.Pointer`. Zero downtime routing changes.
+- **Full Observability**: OpenTelemetry tracing + Prometheus metrics (latency, token usage, cache hits, rate limits).
+- **Cloud-Native Ready**: Multi-arch binaries, multi-stage Dockerfile, `docker-compose` out-of-the-box.
+- **Secure by Design**: Environment variable injection, `.env` templating, 12-Factor App compliant.
 
 ---
 
@@ -53,7 +53,7 @@ go build -o aigw ./cmd/aigw
 ./aigw -config config/config.yaml
 ```
 
-## ⚙️ Configuration
+## Configuration
 `ai-gateway` separates routing logic from secrets. Modify `config/config.yaml` at any time; changes apply automatically.
 ```yaml
 # config/config.yaml
@@ -78,7 +78,7 @@ rate_limit:
 ```
 > 💡 **Hot-Reload**: Edit config.yaml and save. The gateway atomically swaps the routing table without dropping active connections.
 
-## 🔌 Client Integration
+## Client Integration
 Works with any OpenAI-compatible client. Just update `base_url`.
 ### Python (uv + openai)
 ```bash
@@ -101,7 +101,7 @@ response = client.chat.completions.create(
 )
 ```
 
-## 📊 Observability
+## Observability
 - **Metrics:** `GET /metrics` (Prometheus format)
   - `aigw_requests_total{status="200-cache"}` → Cache hit ratio
   - `aigw_request_duration_seconds` → Latency distribution
@@ -111,17 +111,17 @@ response = client.chat.completions.create(
 
 ---
 
-## 📊 Performance Benchmarks
+## 📈 Performance Benchmarks
 
 Tested on: **Ubuntu 22.04 / 8 vCPU / 16GB RAM** (production target)  
 Tooling: `hey -c 50 -n 1000` | [🔗 Reproduce script](scripts/bench.sh)
 
 | Scenario | QPS | P50 Latency | P99 Latency | Cache Hit | Upstream Calls | Memory (RSS) |
 |----------|-----|-------------|-------------|-----------|----------------|--------------|
-| 🔥 Cache Hit (`prompt+model+temp=0`) | **32,082** | **1.3ms** | **6.9ms** | **100%** | **0** | ~42MB |
-| ❄️ Cold Start (first request) | ~95 | ~380ms | ~1.1s | 0% | 100% | ~45MB |
-| 🌐 Direct to Upstream (baseline) | ~88 | ~365ms | ~1.0s | N/A | 100% | N/A |
-| 🚦 Rate Limited (`qps=10, burst=2`) | ~10 | ~45ms | ~180ms | variable | throttled | ~43MB |
+|  Cache Hit (`prompt+model+temp=0`) | **32,082** | **1.3ms** | **6.9ms** | **100%** | **0** | ~42MB |
+|  Cold Start (first request) | ~95 | ~380ms | ~1.1s | 0% | 100% | ~45MB |
+|  Direct to Upstream (baseline) | ~88 | ~365ms | ~1.0s | N/A | 100% | N/A |
+|  Rate Limited (`qps=10, burst=2`) | ~10 | ~45ms | ~180ms | variable | throttled | ~43MB |
 
 > 💡 **Cache Hit**: Same `prompt+model+temperature=0` request returns from in-memory LRU cache. Zero network overhead.  
 > 💡 **Cold Start**: First request includes upstream latency + proxy routing (~5-10ms overhead).  
@@ -129,5 +129,5 @@ Tooling: `hey -c 50 -n 1000` | [🔗 Reproduce script](scripts/bench.sh)
 
 --- 
 
-## 🤝 Contributing
+## Contributing
 PRs, issues, and feedback are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for setup guidelines, commit conventions, and `good first issue` labels.
