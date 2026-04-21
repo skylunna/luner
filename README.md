@@ -1,15 +1,22 @@
 # ai-gateway
 
+<p align="center">
+  <strong>English</strong> | <a href="README.zh.md">中文</a>
+</p>
+
 <img src="https://img.shields.io/github/v/release/your-org/ai-gateway?label=Release&color=blue" alt="Release">
 <img src="https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go" alt="Go">
 <img src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker" alt="Docker">
 <img src="https://img.shields.io/github/license/your-org/ai-gateway?color=green" alt="License">
+
 
 A lightweight, production-ready LLM API gateway built with Go 1.24. Seamlessly proxy, cache, rate-limit, and observe your AI workloads with OpenAI-compatible interfaces. Designed for cloud-native environments and developer-first experience.
 
 ---
 
 ## ✨ Features
+<img src="https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey" alt="Platform">
+
 
 - 🔄 **OpenAI Compatible**: Drop-in replacement for `base_url`. Zero code changes for existing Python/Node.js SDKs.
 - ⚡ **High Performance**: Zero-dependency LRU cache + token-bucket rate limiting. Pure Go, constant memory footprint.
@@ -105,16 +112,20 @@ response = client.chat.completions.create(
 ---
 
 ## 📊 Performance Benchmarks
-Tested on: Apple M2 Max, Go 1.24, 50 concurrent clients, 1000 requests
 
-| Scenario | QPS | P50 Latency | P99 Latency | Cache Hit | Upstream Calls |
-|----------|-----|-------------|-------------|-----------|----------------|
-| 🔥 Cache Hit (this run) | **32,082** | **1.3ms** | **6.9ms** | **100%** | **0** |
-| ❄️ Cold Start (estimated) | ~80-120 | ~350ms | ~1.2s | 0% | 100% |
-| 🚦 Rate Limited (qps=10) | ~10 | ~50ms | ~200ms | variable | throttled |
+Tested on: **Ubuntu 22.04 / 8 vCPU / 16GB RAM** (production target)  
+Tooling: `hey -c 50 -n 1000` | [🔗 Reproduce script](scripts/bench.sh)
 
-> 💡 Cache Hit scenario: Same ` prompt+model+temperature=0 ` request directly returns memory cache with zero network overhead.
-> Cold start data requires restarting the gateway or testing with different messages, with a typical value of upstream latency+proxy overhead (~5-10ms).
+| Scenario | QPS | P50 Latency | P99 Latency | Cache Hit | Upstream Calls | Memory (RSS) |
+|----------|-----|-------------|-------------|-----------|----------------|--------------|
+| 🔥 Cache Hit (`prompt+model+temp=0`) | **32,082** | **1.3ms** | **6.9ms** | **100%** | **0** | ~42MB |
+| ❄️ Cold Start (first request) | ~95 | ~380ms | ~1.1s | 0% | 100% | ~45MB |
+| 🌐 Direct to Upstream (baseline) | ~88 | ~365ms | ~1.0s | N/A | 100% | N/A |
+| 🚦 Rate Limited (`qps=10, burst=2`) | ~10 | ~45ms | ~180ms | variable | throttled | ~43MB |
+
+> 💡 **Cache Hit**: Same `prompt+model+temperature=0` request returns from in-memory LRU cache. Zero network overhead.  
+> 💡 **Cold Start**: First request includes upstream latency + proxy routing (~5-10ms overhead).  
+> 💡 **Cross-Platform**: Binaries provided for Linux/macOS/Windows. Benchmark results vary by OS scheduler & Docker runtime; use `scripts/bench.sh` to test your environment.
 
 --- 
 
