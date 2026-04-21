@@ -32,7 +32,7 @@ func InitTracer(ctx context.Context, logger *slog.Logger) (func(context.Context)
 		resource.Default(),
 		resource.NewWithAttributes(
 			semconv.SchemaURL,
-			semconv.ServiceNameKey.String("ai-gateway"),
+			semconv.ServiceNameKey.String("luner"),
 			semconv.ServiceVersionKey.String("v0.2.0"),
 		),
 	)

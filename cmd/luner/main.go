@@ -89,7 +89,7 @@ func main() {
 
 	// 8. 异步启动服务
 	go func() {
-		logger.Info("starting ai-gateway", "listen", server.Addr, "version", cfg.Version)
+		logger.Info("starting luner", "listen", server.Addr, "version", cfg.Version)
 		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 			logger.Error("HTTP server failed", "err", err)
 			os.Exit(1)

@@ -21,7 +21,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.24.0"
 )
 
-var tracer = otel.Tracer("ai-gateway-proxy")
+var tracer = otel.Tracer("luner-proxy")
 
 type Handler struct {
 	loader  *config.Loader
