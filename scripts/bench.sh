@@ -9,8 +9,8 @@ PAYLOAD='{"model":"qwen-turbo","messages":[{"role":"user","content":"Hello"}]}'
 # 1. 预检：确保服务在线（使用绝对路径）
 echo "🔍 检查服务健康..."
 if ! curl -sf "$BASE_URL/health" > /dev/null 2>&1; then
-  echo "❌ ai-gateway not running at $BASE_URL"
-  echo "💡 请先在另一个终端执行: go run cmd/aigw/main.go -config config/config.yaml"
+  echo "❌ luner not running at $BASE_URL"
+  echo "💡 请先在另一个终端执行: go run cmd/luner/main.go -config config/config.yaml"
   exit 1
 fi
 echo "✅ 服务在线"
@@ -33,7 +33,7 @@ hey -n 1000 -c 50 \
 # 4. 缓存 & 限流指标
 echo -e "\n📈 关键指标统计:"
 echo "── 请求状态分布 ──"
-curl -s "$BASE_URL/metrics" | grep aigw_requests_total | grep -v "^#" | head -10
+curl -s "$BASE_URL/metrics" | grep luner_requests_total | grep -v "^#" | head -10
 echo -e "\n── 缓存命中情况 ──"
 curl -s "$BASE_URL/metrics" | grep "200-cache" || echo "（暂无缓存命中，尝试重复相同请求）"
 echo -e "\n── 限流拦截情况 ──"
