@@ -76,7 +76,7 @@ rate_limit:
       qps: 50.0
       burst: 10
 ```
-> 💡 **Hot-Reload**: Edit config.yaml and save. The gateway atomically swaps the routing table without dropping active connections.
+> **Hot-Reload**: Edit config.yaml and save. The gateway atomically swaps the routing table without dropping active connections.
 
 ## Client Integration
 Works with any OpenAI-compatible client. Just update `base_url`.
@@ -123,9 +123,9 @@ Tooling: `hey -c 50 -n 1000` | [🔗 Reproduce script](scripts/bench.sh)
 |  Direct to Upstream (baseline) | ~88 | ~365ms | ~1.0s | N/A | 100% | N/A |
 |  Rate Limited (`qps=10, burst=2`) | ~10 | ~45ms | ~180ms | variable | throttled | ~43MB |
 
-> 💡 **Cache Hit**: Same `prompt+model+temperature=0` request returns from in-memory LRU cache. Zero network overhead.  
-> 💡 **Cold Start**: First request includes upstream latency + proxy routing (~5-10ms overhead).  
-> 💡 **Cross-Platform**: Binaries provided for Linux/macOS/Windows. Benchmark results vary by OS scheduler & Docker runtime; use `scripts/bench.sh` to test your environment.
+>  **Cache Hit**: Same `prompt+model+temperature=0` request returns from in-memory LRU cache. Zero network overhead.  
+>  **Cold Start**: First request includes upstream latency + proxy routing (~5-10ms overhead).  
+>  **Cross-Platform**: Binaries provided for Linux/macOS/Windows. Benchmark results vary by OS scheduler & Docker runtime; use `scripts/bench.sh` to test your environment.
 
 --- 
 
