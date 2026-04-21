@@ -76,8 +76,4 @@ Thumbs.db
 logs/
 *.tmp
 *.temp
-*.bakluner
-luner.exe
-bin/
-luner
-go.mod.bak
+*.bak
