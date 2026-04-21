@@ -1,4 +1,4 @@
-module github.com/skylunna/ai-gateway
+module github.com/skylunna/luner
 
 go 1.24
 

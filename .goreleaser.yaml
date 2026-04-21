@@ -1,6 +1,6 @@
 version: 2
 
-project_name: ai-gateway
+project_name: luner
 
 builds:
   - id: aigw

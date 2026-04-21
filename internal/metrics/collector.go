@@ -20,10 +20,10 @@ var (
 			- provider: 厂商 (ali/openai/volc)
 			- status: 状态码 (200/400/500/502)
 
-		aigw_requests_total{model="qwen-turbo",provider="ali",status="200"} 123
+		luner_requests_total{model="qwen-turbo",provider="ali",status="200"} 123
 	*/
 	RequestTotal = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "aigw_requests_total",                    // 指标名称
+		Name: "luner_requests_total",                    // 指标名称
 		Help: "Total number of LLM requests processed", // 说明
 	}, []string{"model", "provider", "status"}) // 标签维度
 
@@ -34,16 +34,16 @@ var (
 				- model
 				- provider
 
-		aigw_request_duration_seconds_bucket{model="qwen-turbo",provider="ali",le="0.1"} 89
+		luner_request_duration_seconds_bucket{model="qwen-turbo",provider="ali",le="0.1"} 89
 	*/
 	RequestDuration = prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Name:    "aigw_request_duration_seconds",
+		Name:    "luner_request_duration_seconds",
 		Help:    "Request latency in seconds",
 		Buckets: prometheus.DefBuckets, // 默认耗时区间 [.005, .01, .025, .05, ... , 10]
 	}, []string{"model", "provider"})
 
 	TokensUsed = prometheus.NewCounterVec(prometheus.CounterOpts{
-		Name: "aigw_tokens_used_total",
+		Name: "luner_tokens_used_total",
 		Help: "Total tokens consumed by model",
 	}, []string{"model", "type"})
 )

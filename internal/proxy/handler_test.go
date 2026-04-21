@@ -10,8 +10,8 @@ import (
 	"log/slog"
 	"os"
 
-	"github.com/skylunna/ai-gateway/internal/config"
-	"github.com/skylunna/ai-gateway/internal/metrics"
+	"github.com/skylunna/luner/internal/config"
+	"github.com/skylunna/luner/internal/metrics"
 )
 
 func TestProxyHandler(t *testing.T) {
