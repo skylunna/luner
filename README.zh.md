@@ -4,10 +4,10 @@
   <a href="README.md">English</a> | <strong>中文</strong>
 </p>
 
-<img src="https://img.shields.io/github/v/release/your-org/ai-gateway?label=Release&color=blue" alt="Release">
-<img src="https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go" alt="Go">
-<img src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker" alt="Docker">
-<img src="https://img.shields.io/github/license/your-org/ai-gateway?color=green" alt="License">
+[![Release](https://img.shields.io/github/v/release/skylunna/ai-gateway?label=Release&color=blue)](https://github.com/your-org/ai-gateway/releases)
+[![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://go.dev/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://docs.docker.com/compose/)
+[![License](https://img.shields.io/github/license/skylunna/ai-gateway?color=green)](https://github.com/skylunna/ai-gateway/blob/main/LICENSE)
 
 
 基于 Go 1.24 构建的轻量级、生产就绪的 LLM API 网关。通过与 OpenAI 兼容的接口，无缝实现对 AI 工作负载的代理、缓存、限流和可观测性监控。专为云原生环境和开发者优先体验而设计。
@@ -15,7 +15,7 @@
 ---
 
 ## ✨ 特性
-<img src="https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey" alt="Platform">
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/your-org/ai-gateway/releases)
 
 - 🔄 **兼容 OpenAI**: 零侵入替换 `base_url`。现有的 Python/Node.js SDK 无需修改任何代码。
 - ⚡ **高性能**: 零依赖的 LRU 缓存 + 令牌桶限流。纯 Go 实现，内存占用极低且稳定。
@@ -125,3 +125,8 @@ response = client.chat.completions.create(
 > 💡 **缓存命中:** 相同的 prompt+model+temperature=0 请求将直接从内存 LRU 缓存中返回，网络开销为零。
 > 💡 **冷启动:** 首次请求包含上游延迟 + 代理路由开销（约 5-10ms 额外延迟）。
 > 💡 **跨平台:** 我们提供了适用于 Linux/macOS/Windows 的二进制文件。基准测试结果会因操作系统调度器和 Docker 运行时的不同而有所差异；请使用 scripts/bench.sh 在您自己的环境中进行测试。
+
+---
+
+## 🤝 参与贡献
+我们非常欢迎提交 PR、Issue 和反馈意见。请查阅 [CONTRIBUTING.md](CONTRIBUTING.md) 了解环境搭建指引、提交规范以及带有 `good first issue` 标签的新手任务。

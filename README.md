@@ -4,10 +4,10 @@
   <strong>English</strong> | <a href="README.zh.md">中文</a>
 </p>
 
-<img src="https://img.shields.io/github/v/release/your-org/ai-gateway?label=Release&color=blue" alt="Release">
-<img src="https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go" alt="Go">
-<img src="https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker" alt="Docker">
-<img src="https://img.shields.io/github/license/your-org/ai-gateway?color=green" alt="License">
+[![Release](https://img.shields.io/github/v/release/skylunna/ai-gateway?label=Release&color=blue)](https://github.com/your-org/ai-gateway/releases)
+[![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://go.dev/)
+[![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://docs.docker.com/compose/)
+[![License](https://img.shields.io/github/license/skylunna/ai-gateway?color=green)](https://github.com/skylunna/ai-gateway/blob/main/LICENSE)
 
 
 A lightweight, production-ready LLM API gateway built with Go 1.24. Seamlessly proxy, cache, rate-limit, and observe your AI workloads with OpenAI-compatible interfaces. Designed for cloud-native environments and developer-first experience.
@@ -15,7 +15,7 @@ A lightweight, production-ready LLM API gateway built with Go 1.24. Seamlessly p
 ---
 
 ## ✨ Features
-<img src="https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey" alt="Platform">
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/your-org/ai-gateway/releases)
 
 
 - 🔄 **OpenAI Compatible**: Drop-in replacement for `base_url`. Zero code changes for existing Python/Node.js SDKs.
@@ -76,7 +76,7 @@ rate_limit:
       qps: 50.0
       burst: 10
 ```
-> 💡 Hot-Reload: Edit config.yaml and save. The gateway atomically swaps the routing table without dropping active connections.
+> 💡 **Hot-Reload**: Edit config.yaml and save. The gateway atomically swaps the routing table without dropping active connections.
 
 ## 🔌 Client Integration
 Works with any OpenAI-compatible client. Just update `base_url`.
