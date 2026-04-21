@@ -1,14 +1,14 @@
 ![Product Logo](./assets/logo/luner-logo-fat.png)
-# luner
+# ai-gateway
 
 <p align="center">
   <a href="README.md">English</a> | <strong>中文</strong>
 </p>
 
-[![Release](https://img.shields.io/github/v/release/skylunna/luner?label=Release&color=blue)](https://github.com/your-org/luner/releases)
+[![Release](https://img.shields.io/github/v/release/skylunna/ai-gateway?label=Release&color=blue)](https://github.com/your-org/ai-gateway/releases)
 [![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://go.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://docs.docker.com/compose/)
-[![License](https://img.shields.io/github/license/skylunna/luner?color=green)](https://github.com/skylunna/luner/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/skylunna/ai-gateway?color=green)](https://github.com/skylunna/ai-gateway/blob/main/LICENSE)
 
 
 基于 Go 1.24 构建的轻量级、生产就绪的 LLM API 网关。通过与 OpenAI 兼容的接口，无缝实现对 AI 工作负载的代理、缓存、限流和可观测性监控。专为云原生环境和开发者优先体验而设计。
@@ -16,7 +16,7 @@
 ---
 
 ## ✨ 特性
-[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/your-org/luner/releases)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/your-org/ai-gateway/releases)
 
 - **兼容 OpenAI**: 零侵入替换 `base_url`。现有的 Python/Node.js SDK 无需修改任何代码。
 - **高性能**: 零依赖的 LRU 缓存 + 令牌桶限流。纯 Go 实现，内存占用极低且稳定。
@@ -31,7 +31,7 @@
 
 ### 方案 1：Docker Compose（推荐）
 ```bash
-git clone [https://github.com/skylunna/luner.git](https://github.com/skylunna/luner.git) && cd luner
+git clone [https://github.com/skylunna/ai-gateway.git](https://github.com/skylunna/ai-gateway.git) && cd ai-gateway
 cp config/config.example.yaml config/config.yaml
 cp .env.example .env  # 在 .env 文件中配置你的 API Key
 docker compose up -d
@@ -42,10 +42,10 @@ curl http://localhost:8080/health
 
 ### 方案 2：Docker 运行
 ```bash
-docker run -d --name luner -p 8080:8080 \
+docker run -d --name ai-gateway -p 8080:8080 \
   -v "$(pwd)/config/config.yaml:/app/config.yaml:ro" \
   --env-file .env \
-  ghcr.io/your-org/luner:v0.4.1
+  ghcr.io/your-org/ai-gateway:v0.4.1
 ```
 
 ### 方案 3：源码编译
@@ -55,7 +55,7 @@ go build -o aigw ./cmd/aigw
 ```
 
 ## 配置说明
-`luner` 实现了路由逻辑与敏感信息（密钥）的分离。你可以随时修改 `config/config.yaml`，变更会自动生效。
+`ai-gateway` 实现了路由逻辑与敏感信息（密钥）的分离。你可以随时修改 `config/config.yaml`，变更会自动生效。
 ```yaml
 # config/config.yaml
 providers:

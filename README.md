@@ -1,15 +1,15 @@
 ![Product Logo](./assets/logo/luner-logo-fat.png)
 
-# luner
+# ai-gateway
 
 <p align="center">
   <strong>English</strong> | <a href="README.zh.md">中文</a>
 </p>
 
-[![Release](https://img.shields.io/github/v/release/skylunna/luner?label=Release&color=blue)](https://github.com/your-org/luner/releases)
+[![Release](https://img.shields.io/github/v/release/skylunna/ai-gateway?label=Release&color=blue)](https://github.com/your-org/ai-gateway/releases)
 [![Go](https://img.shields.io/badge/Go-1.24+-00ADD8?logo=go)](https://go.dev/)
 [![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker)](https://docs.docker.com/compose/)
-[![License](https://img.shields.io/github/license/skylunna/luner?color=green)](https://github.com/skylunna/luner/blob/main/LICENSE)
+[![License](https://img.shields.io/github/license/skylunna/ai-gateway?color=green)](https://github.com/skylunna/ai-gateway/blob/main/LICENSE)
 
 
 A lightweight, production-ready LLM API gateway built with Go 1.24. Seamlessly proxy, cache, rate-limit, and observe your AI workloads with OpenAI-compatible interfaces. Designed for cloud-native environments and developer-first experience.
@@ -17,7 +17,7 @@ A lightweight, production-ready LLM API gateway built with Go 1.24. Seamlessly p
 ---
 
 ## ✨ Features
-[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/your-org/luner/releases)
+[![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/your-org/ai-gateway/releases)
 
 
 - **OpenAI Compatible**: Drop-in replacement for `base_url`. Zero code changes for existing Python/Node.js SDKs.
@@ -33,7 +33,7 @@ A lightweight, production-ready LLM API gateway built with Go 1.24. Seamlessly p
 
 ### Option 1: Docker Compose (Recommended)
 ```bash
-git clone https://github.com/skylunna/luner.git && cd luner
+git clone https://github.com/skylunna/ai-gateway.git && cd ai-gateway
 cp config/config.example.yaml config/config.yaml
 cp .env.example .env  # Edit .env with your API keys
 docker compose up -d
@@ -43,10 +43,10 @@ Verify: curl http://localhost:8080/health
 
 ### Option 2: Docker Run
 ```bash
-docker run -d --name luner -p 8080:8080 \
+docker run -d --name ai-gateway -p 8080:8080 \
   -v "$(pwd)/config/config.yaml:/app/config.yaml:ro" \
   --env-file .env \
-  ghcr.io/your-org/luner:v0.4.1
+  ghcr.io/your-org/ai-gateway:v0.4.1
 ```
 
 ### Option 3: From Source
@@ -56,7 +56,7 @@ go build -o aigw ./cmd/aigw
 ```
 
 ## Configuration
-`luner` separates routing logic from secrets. Modify `config/config.yaml` at any time; changes apply automatically.
+`ai-gateway` separates routing logic from secrets. Modify `config/config.yaml` at any time; changes apply automatically.
 ```yaml
 # config/config.yaml
 providers:

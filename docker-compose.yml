@@ -1,6 +1,6 @@
 services:
-  luner:
-    container_name: luner
+  ai-gateway:
+    container_name: ai-gateway
     build: .
     ports:
       - "8080:8080"

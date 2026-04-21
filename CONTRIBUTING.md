@@ -1,6 +1,6 @@
-# Contributing to luner
+# Contributing to ai-gateway
 
-感谢你对 `luner` 的贡献！我们遵循 Go 社区标准与 [Conventional Commits](https://www.conventionalcommits.org/)。
+感谢你对 `ai-gateway` 的贡献！我们遵循 Go 社区标准与 [Conventional Commits](https://www.conventionalcommits.org/)。
 
 ## 🛠️ 本地开发
 ```bash

@@ -80,3 +80,4 @@ logs/
 luner.exe
 bin/
 go.mod.bak
+*.bak
