@@ -5,7 +5,29 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [v0.4.0] - 2026-04-25
+## [v0.4.1]
+
+### 🚀 Added
+- **Docker Compose First**: Added `docker-compose.yml` as the recommended deployment method, with automatic path handling for Windows/macOS/Linux.
+- **Secure Config Templating**: Added `.env.example` for credential management, following 12-Factor App principles.
+- **Python SDK Example**: Added `examples/python-client-test/` with `uv` dependency management and `.env` config, demonstrating zero-code-migration integration.
+- **Layered Documentation**: Updated `README.md` with beginner-friendly quick start and advanced user guides.
+
+### 🛠️ Changed
+- Optimized volume mount paths to avoid Windows PowerShell escaping issues.
+- Added `healthcheck` and structured logging config for production readiness.
+
+### 📖 Documentation
+- Added "Why docker-compose?" comparison table in deployment guide.
+- Added troubleshooting section for common mount/permission issues.
+
+### 🐛 Fixed
+- Clarified config loading path (`/app/config/config.yaml`) in all examples to prevent 404 errors.
+
+> 💡 This is a **developer experience (DX) release** – no runtime behavior changes from v0.4.0. Perfect for new users to get started in 3 minutes!
+
+
+## [v0.4.0]
 
 ### 🚀 Added
 - **Zero-dependency LRU cache**: Thread-safe in-memory cache with TTL eviction & SHA256 prompt hashing (`internal/cache/lru.go`). Supports cache hit/miss metrics via Prometheus.
