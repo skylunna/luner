@@ -1,12 +1,12 @@
-version: '3.8'
 services:
   ai-gateway:
+    container_name: ai-gateway
     build: .
     ports:
       - "8080:8080"
-      - "9090:9090" # 预留 Prometheus/Grafana 对接
+      - "9090:9090"
     volumes:
-      - ./config:/app/config:ro
+      - ./config/config.yaml:/app/config.yaml:ro
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-}

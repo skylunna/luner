@@ -106,7 +106,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		cacheKey := cache.GenerateKey(model, msgJSON, temp)
 		if cached, ok := h.cache.Get(cacheKey); ok {
 			span.SetAttributes(attribute.Bool("cache.hit", true))
-			w.Header().Set("Content-Type", "application/json")
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			w.WriteHeader(http.StatusOK)
 			_, _ = w.Write(cached)
 			metrics.RequestTotal.WithLabelValues(model, provider.Name, "200-cache").Inc()
@@ -134,6 +134,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	// 注入 Trace 上下文
 	upstreamReq.Header = r.Header.Clone()
 	otel.GetTextMapPropagator().Inject(ctx, propagation.HeaderCarrier(upstreamReq.Header))
+	upstreamReq.Header.Set("Accept-Encoding", "identity")
 	upstreamReq.Header.Set("Authorization", "Bearer "+provider.APIKey)
 	upstreamReq.Header.Set("Content-Length", fmt.Sprintf("%d", len(bodyBytes)))
 	upstreamReq.ContentLength = int64(len(bodyBytes))
@@ -160,7 +161,7 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer resp.Body.Close()
 
 	// 6. 响应透传 & Token 统计
-	w.Header().Set("Content-Type", resp.Header.Get("Content-Type"))
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(resp.StatusCode)
 
 	if !stream && h.cache != nil {
@@ -253,7 +254,7 @@ func (h *Handler) executeWithRetry(req *http.Request, maxRetries int) (*http.Res
 }
 
 func (h *Handler) writeError(w http.ResponseWriter, msg string, code int) {
-	w.Header().Set("Content-Type", "application/json")
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(code)
 	fmt.Fprintf(w, `{"error":{"message":"%s","type":"api_error"}}`, msg)
 }
