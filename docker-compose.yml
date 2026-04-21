@@ -1,15 +1,23 @@
+version: '3.8'
 services:
-  luner-ai-gateway:
-    container_name: luner
+  luner:
     build: .
+    image: ghcr.io/skylunna/luner:v0.4.2
+    container_name: luner
     ports:
       - "8080:8080"
       - "9090:9090"
     volumes:
-      - ./config/config.yaml:/app/config.yaml:ro
+      - ./config:/app/config:ro
+    env_file:
+      - .env
     environment:
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - OTEL_EXPORTER_OTLP_ENDPOINT=${OTEL_EXPORTER_OTLP_ENDPOINT:-}
+      - LOG_LEVEL=${LOG_LEVEL:-info}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
     restart: unless-stopped
     logging:
       driver: json-file
