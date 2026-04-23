@@ -81,3 +81,6 @@ luner.exe
 bin/
 go.mod.bak
 *.bak
+
+bench_cache_hit.txt
+bench_cold_start.txt
