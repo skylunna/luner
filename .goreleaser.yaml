@@ -65,9 +65,13 @@ dockers:
     dockerfile: Dockerfile
     build_flag_templates:
       - "--pull"
+      - "--label=org.opencontainers.image.title={{ .ProjectName }}"
+      - "--label=org.opencontainers.image.description={{ .ProjectName }} - LLM API Gateway"
+      - "--label=org.opencontainers.image.url=https://github.com/skylunna/luner"
       - "--label=org.opencontainers.image.source=https://github.com/skylunna/luner"
       - "--label=org.opencontainers.image.version={{ .Version }}"
-      - "--platform=linux/amd64"
+      - "--label=org.opencontainers.image.created={{ .Date }}"
+      - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
     skip_push: false
 
 docker_manifests:
