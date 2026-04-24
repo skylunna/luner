@@ -21,8 +21,8 @@ builds:
     ldflags:
       - -s -w
       - -X github.com/skylunna/luner/cmd/luner.Version={{.Version}}
-      - -X github.com/skylunna/luner/cmd/luner.commit={{.Commit}}
-      - -X github.com/skylunna/luner/cmd/luner.buildDate={{.Date}}
+      - -X github.com/skylunna/luner/cmd/luner.Commit={{.Commit}}
+      - -X github.com/skylunna/luner/cmd/luner.BuildDate={{.Date}}
 
 archives:
   - format: tar.gz
@@ -56,15 +56,21 @@ changelog:
       - Merge pull request
       - Merge branch
 
-# 放在文件末尾，与 builds/archives 同级
+
 dockers:
   - id: luner
+    use: buildx 
+    dockerfile: Dockerfile.goreleaser
+    goos: linux 
+    goarch:
+      - amd64
+      - arm64
     image_templates:
       - "ghcr.io/skylunna/luner:{{ .Version }}"
       - "ghcr.io/skylunna/luner:latest"
-    dockerfile: Dockerfile
     build_flag_templates:
       - "--pull"
+      - "--platform=linux/amd64,linux/arm64"
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description={{ .ProjectName }} - LLM API Gateway"
       - "--label=org.opencontainers.image.url=https://github.com/skylunna/luner"
@@ -73,8 +79,3 @@ dockers:
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
     skip_push: false
-
-docker_manifests:
-  - name_template: "ghcr.io/skylunna/luner:{{ .Version }}"
-    image_templates:
-      - "ghcr.io/skylunna/luner:{{ .Version }}-amd64"

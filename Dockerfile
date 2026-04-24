@@ -11,7 +11,7 @@ FROM alpine:3.20
 RUN apk --no-cache add ca-certificates tzdata curl
 WORKDIR /app
 COPY --from=builder /luner .
-# COPY config/config.example.yaml ./config.yaml
+COPY config/config.example.yaml ./config.yaml
 EXPOSE 8080
 
 HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
