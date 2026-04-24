@@ -67,7 +67,6 @@ dockers:
     image_templates:
       - "ghcr.io/skylunna/luner:{{ .Version }}"
       - "ghcr.io/skylunna/luner:latest"
-    dockerfile: Dockerfile
     build_flag_templates:
       - "--pull"
       - "--platform=linux/amd64,linux/arm64"
