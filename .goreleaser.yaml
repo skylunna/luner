@@ -65,6 +65,7 @@ dockers:
       - "ghcr.io/skylunna/luner:latest"
     build_flag_templates:
       - "--pull"
+      - "--push" 
       - "--platform=linux/amd64,linux/arm64"
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description={{ .ProjectName }} - LLM API Gateway"
