@@ -1,6 +1,6 @@
 version: 2
 
-project_name: luner
+project_name: tiny-llm-gateway
 
 builds:
   - id: luner
@@ -25,15 +25,11 @@ builds:
       - -X github.com/skylunna/luner/cmd/luner.buildDate={{.Date}}
 
 archives:
-  - format: tar.gz
-    name_template: >-
+  - name_template: >-
       {{ .ProjectName }}_
       {{- .Version }}_
       {{- .Os }}_
       {{- .Arch }}
-    format_overrides:
-      - goos: windows
-        format: zip
     files:
       - README.md
       - LICENSE
@@ -56,17 +52,20 @@ changelog:
       - Merge pull request
       - Merge branch
 
-dockers:
+dockers_v2:
   - id: luner-docker
-    ids:
-      - luner
     image_templates:
       - "ghcr.io/skylunna/luner:{{ .Version }}"
       - "ghcr.io/skylunna/luner:latest"
     dockerfile: Dockerfile
+
+    buildx: true
+
+    platforms:
+      - linux/amd64
+      - linux/arm64
     build_flag_templates:
       - "--pull"
-      - "--platform=linux/amd64,linux/arm64"
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description={{ .ProjectName }} - LLM API Gateway"
       - "--label=org.opencontainers.image.url=https://github.com/skylunna/luner"
@@ -74,13 +73,3 @@ dockers:
       - "--label=org.opencontainers.image.version={{ .Version }}"
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
-
-docker_manifests:
-  - name_template: "ghcr.io/skylunna/luner:{{ .Version }}"
-    image_templates:
-      - "ghcr.io/skylunna/luner:{{ .Version }}-amd64"
-      - "ghcr.io/skylunna/luner:{{ .Version }}-arm64"
-  - name_template: "ghcr.io/skylunna/luner:latest"
-    image_templates:
-      - "ghcr.io/skylunna/luner:latest-amd64"
-      - "ghcr.io/skylunna/luner:latest-arm64"
