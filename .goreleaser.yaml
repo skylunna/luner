@@ -56,14 +56,14 @@ changelog:
       - Merge pull request
       - Merge branch
 
-dockers_v2:
-  - ids:
+dockers:
+  - id: luner-docker
+    ids:
       - luner
     image_templates:
       - "ghcr.io/skylunna/luner:{{ .Version }}"
       - "ghcr.io/skylunna/luner:latest"
     dockerfile: Dockerfile
-    use: buildx
     build_flag_templates:
       - "--pull"
       - "--platform=linux/amd64,linux/arm64"
@@ -74,3 +74,13 @@ dockers_v2:
       - "--label=org.opencontainers.image.version={{ .Version }}"
       - "--label=org.opencontainers.image.created={{ .Date }}"
       - "--label=org.opencontainers.image.revision={{ .FullCommit }}"
+
+docker_manifests:
+  - name_template: "ghcr.io/skylunna/luner:{{ .Version }}"
+    image_templates:
+      - "ghcr.io/skylunna/luner:{{ .Version }}-amd64"
+      - "ghcr.io/skylunna/luner:{{ .Version }}-arm64"
+  - name_template: "ghcr.io/skylunna/luner:latest"
+    image_templates:
+      - "ghcr.io/skylunna/luner:latest-amd64"
+      - "ghcr.io/skylunna/luner:latest-arm64"
