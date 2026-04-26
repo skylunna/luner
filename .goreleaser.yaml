@@ -61,9 +61,9 @@ dockers:
       - "ghcr.io/skylunna/luner:{{ .Version }}"
       - "ghcr.io/skylunna/luner:latest"
     dockerfile: Dockerfile
-    use_buildx: true
     build_flag_templates:
       - "--pull"
+      - "--platform=linux/amd64,linux/arm64" 
       - "--label=org.opencontainers.image.title={{ .ProjectName }}"
       - "--label=org.opencontainers.image.description={{ .ProjectName }} - LLM API Gateway"
       - "--label=org.opencontainers.image.url=https://github.com/skylunna/luner"
