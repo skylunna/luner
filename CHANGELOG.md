@@ -22,9 +22,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-%0A## [0.4.5] - 2026-04-27%0A%0A### 🚀 Added%0A- *(No new features)*%0A%0A### 🛠️ Changed%0A- *(No changes)*%0A%0A### 🐛 Fixed%0A- fix: add executable permission to generate-changelog.sh%0A%0A### 📦 Infrastructure%0A- ci: add auto-CHANGELOG update v2%0A- ci: add auto-CHANGELOG update%0A- chore: format code & tidy mod%0A- chore: format code & tidy mod%0A- chore: auto format ai gateway code%0A%0A### 📖 Documentation%0A- *(No docs updates)*
-
-
 
 ## [v0.4.2]
 
