@@ -79,6 +79,8 @@ fi
 # Optional: Add callout box (customizable per release)
 # echo "> 💡 **Note**: This release focuses on DX improvements. No runtime behavior changes."
 
+cat << 'FOOTER'
+
 ---
 ### 🔗 Quick Links
 - 📄 [Full Changelog](https://github.com/$REPO/blob/main/CHANGELOG.md)
@@ -86,3 +88,4 @@ fi
 - 📦 Binaries: See Assets below
 
 > 💡 **Tip**: Upgrade with \`docker compose pull && docker compose up -d\` for zero-downtime update.
+FOOTER
