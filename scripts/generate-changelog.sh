@@ -25,7 +25,7 @@ if [[ -z "$PREV_TAG" ]]; then
 fi
 
 # Extract version and date
-VERSION="${NEW_TAG#v}"  # Remove 'v' prefix
+VERSION="${NEW_TAG#v}"
 DATE="$(date -u +'%Y-%m-%d')"
 
 # Generate header
