@@ -78,3 +78,11 @@ fi
 
 # Optional: Add callout box (customizable per release)
 # echo "> 💡 **Note**: This release focuses on DX improvements. No runtime behavior changes."
+
+---
+### 🔗 Quick Links
+- 📄 [Full Changelog](https://github.com/$REPO/blob/main/CHANGELOG.md)
+- 🐳 Docker: \`docker pull ghcr.io/$REPO:$VERSION\`
+- 📦 Binaries: See Assets below
+
+> 💡 **Tip**: Upgrade with \`docker compose pull && docker compose up -d\` for zero-downtime update.
