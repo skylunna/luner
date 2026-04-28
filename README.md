@@ -31,12 +31,11 @@ A lightweight LLM API gateway that can be used for production. Seamlessly proxy,
 ## 🚀 Quick Start
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/your-org/luner/releases)
 
+
 ### Option 1: Docker Compose (Recommended)
 ```bash
 git clone https://github.com/skylunna/luner.git && cd luner
-cp config/config.example.yaml config/config.yaml
-cp .env.example .env  # Edit .env with your API keys
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d 
 
 Verify: curl http://localhost:8080/health
 ```
@@ -54,6 +53,15 @@ docker run -d --name luner -p 8080:8080 \
 go build -o aigw ./cmd/aigw
 ./aigw -config config/config.yaml
 ```
+
+### Monitoring
+1. open web http://localhost:3000/
+2. click Dashboards
+3. New import && select ./grafana/luner-dashboard.json
+4. click Data sources
+5. add Prometheus
+
+![Product Logo](./assets/examples/test-result-show-web.png)
 
 ## Configuration
 `luner` separates routing logic from secrets. Modify `config/config.yaml` at any time; changes apply automatically.

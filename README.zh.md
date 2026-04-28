@@ -33,9 +33,7 @@
 ### 方案 1：Docker Compose（推荐）
 ```bash
 git clone [https://github.com/skylunna/luner.git](https://github.com/skylunna/luner.git) && cd luner
-cp config/config.example.yaml config/config.yaml
-cp .env.example .env  # 在 .env 文件中配置你的 API Key
-docker compose up -d
+docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d 
 
 # 验证服务是否启动
 curl http://localhost:8080/health
@@ -54,6 +52,15 @@ docker run -d --name luner -p 8080:8080 \
 go build -o aigw ./cmd/aigw
 ./aigw -config config/config.yaml
 ```
+
+### Monitoring
+1. 打开 http://localhost:3000/   # 你的服务地址替换localhost
+2. 进入 Dashboards
+3. New import && select ./grafana/luner-dashboard.json
+4. 进入 Data sources
+5. add Prometheus
+
+![Product Logo](./assets/examples/test-result-show-web.png)
 
 ## 配置说明
 `luner` 实现了路由逻辑与敏感信息（密钥）的分离。你可以随时修改 `config/config.yaml`，变更会自动生效。
