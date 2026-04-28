@@ -112,7 +112,6 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 缓存检查 (仅非流式)
-	// 缓存检查 (仅非流式)
 	if h.cache != nil && !stream {
 		msgJSON, _ := json.Marshal(reqPayload["messages"])
 		cacheKey := cache.GenerateKey(model, msgJSON, temp)
