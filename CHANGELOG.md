@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [v0.4.6-test] - 2026-04-28
+
+### 🚀 Added
+  - sync auto-changelog to GitHub Release body
+
+### 📦 Infrastructure
+  - update release changelog
+  - upgrade to Go 1.26
+
+### 📖 Documentation
+  - fix sh error
+  - update CHANGELOG.md for v0.4.5-test [skip ci]
+  - update changelog remove garbled text
+
+
+---
+### 🔗 Quick Links
+- 📄 [Full Changelog](https://github.com/$REPO/blob/main/CHANGELOG.md)
+- 🐳 Docker: \`docker pull ghcr.io/$REPO:$VERSION\`
+- 📦 Binaries: See Assets below
+
+> 💡 **Tip**: Upgrade with \`docker compose pull && docker compose up -d\` for zero-downtime update.
+---
+
 ## [v0.4.5-test] - 2026-04-27
 
 ### 🐛 Fixed
