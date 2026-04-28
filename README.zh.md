@@ -15,6 +15,10 @@
 
 ---
 
+![architecture](./assets/architecture/architecture-v1.png)
+
+---
+
 ## ✨ 特性
 
 
