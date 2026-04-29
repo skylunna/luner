@@ -49,12 +49,12 @@ Verify: curl http://localhost:8080/health
 docker run -d --name luner -p 8080:8080 \
   -v "$(pwd)/config/config.yaml:/app/config.yaml:ro" \
   --env-file .env \
-  ghcr.io/your-org/luner:v0.4.1
+  ghcr.io/skylunna/luner:v0.4.1
 ```
 
 ### Option 3: From Source
 ```bash
-go build -o aigw ./cmd/aigw
+go build -o aigw ./cmd/luner
 ./aigw -config config/config.yaml
 ```
 

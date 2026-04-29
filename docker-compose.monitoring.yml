@@ -33,7 +33,7 @@ services:
       - '--web.enable-lifecycle'
     restart: unless-stopped
 
-  # Grafana 可视化
+
   grafana:
     image: grafana/grafana:10.0.0
     container_name: grafana
@@ -43,6 +43,11 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+
       - grafana-data:/var/lib/grafana
     restart: unless-stopped
     depends_on:

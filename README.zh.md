@@ -53,7 +53,7 @@ docker run -d --name luner -p 8080:8080 \
 
 ### 方案 3：源码编译
 ```bash
-go build -o aigw ./cmd/aigw
+go build -o aigw ./cmd/luner
 ./aigw -config config/config.yaml
 ```
 
