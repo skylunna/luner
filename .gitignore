@@ -76,6 +76,7 @@ Thumbs.db
 logs/
 *.tmp
 *.temp
+.claude/settings.local.json
 *.bakluner
 luner.exe
 bin/

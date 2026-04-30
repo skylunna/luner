@@ -48,7 +48,7 @@ curl http://localhost:8080/health
 docker run -d --name luner -p 8080:8080 \
   -v "$(pwd)/config/config.yaml:/app/config.yaml:ro" \
   --env-file .env \
-  ghcr.io/your-org/luner:v0.4.1
+  ghcr.io/skylunna/luner:v0.4.1
 ```
 
 ### 方案 3：源码编译
