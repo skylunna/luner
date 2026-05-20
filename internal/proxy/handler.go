@@ -150,9 +150,10 @@ func (h *Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			rw.WriteHeader(http.StatusOK)
 			_, _ = rw.Write(cached)
 			metrics.RequestTotal.WithLabelValues(model, provider.Name, "200-cache").Inc()
-
-			// 记录缓存请求的延迟（单独 label 区分）
 			metrics.RequestDuration.WithLabelValues(model, provider.Name, "cache").Observe(time.Since(start).Seconds())
+
+			// 记录 span：cache 命中仍需保留 agent/user 上下文，用合成 resp 表示 200
+			h.collectSpan(r, &http.Response{StatusCode: http.StatusOK}, bodyBytes, cached, start)
 
 			return
 		}

@@ -12,6 +12,9 @@ FROM golang:1.26-alpine AS go-builder
 WORKDIR /app
 RUN apk add --no-cache git
 
+ARG GOPROXY=https://proxy.golang.org,direct
+ENV GOPROXY=${GOPROXY}
+
 # Cache dependency layer separately
 COPY go.mod go.sum ./
 RUN go mod download

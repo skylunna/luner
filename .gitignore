@@ -97,3 +97,5 @@ config-demo.yaml
 !sdk/python/luner
 
 node_modules/
+
+/examples/
