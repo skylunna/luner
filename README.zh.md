@@ -71,55 +71,143 @@ OpenTelemetry 链路追踪（OTLP）+ Prometheus 指标，Span 级别的成本�
 
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/skylunna/luner/releases)
 
-### 方案 1：Demo 模式 — 一条命令，立即看到 Dashboard（推荐用于体验）
+| 方式 | 时间 | 前置条件 |
+|---|---|---|
+| **Demo 模式** | ~2 分钟 | 仅需 Docker，无需 API Key |
+| **生产模式** | ~5 分钟 | Docker + 真实 LLM API Key |
+| **源码编译** | ~5 分钟 | Go 1.26+ 和 Node 20+ |
+
+---
+
+### Demo 模式 — 2 分钟体验
+
+无需 API Key。使用内置 Mock LLM，自动向 Dashboard 写入演示数据。
 
 ```bash
 git clone https://github.com/skylunna/luner.git
 cd luner
 
-# 构建镜像并启动全部服务（mock LLM + luner + 示例数据）
 docker compose up -d --build
-
-# 等待约 30 秒完成镜像构建和数据初始化
-docker compose logs -f seed-data   # 看到 "Demo data ready" 即可
+docker compose logs -f seed-data    # 等待出现 "Demo data ready"
 ```
 
-打开 **http://localhost:8080**，即可看到预加载的 Trace 时间线、成本图表和策略列表。
+打开 **http://localhost:8080**，即可看到已预加载的 Trace 时间线、成本图表和策略列表。
 
 ```bash
-# 验证
+curl http://localhost:8080/api/health    # 返回 {"status":"ok"} 即正常
+
+docker compose down      # 停止（保留数据库）
+docker compose down -v   # 停止并删除数据库
+```
+
+---
+
+### 生产模式 — 接入真实 LLM
+
+支持任意 OpenAI 兼容的 Provider。默认配置使用阿里云 Qwen；在 `config.prod.yaml` 中取消注释即可切换到 OpenAI。
+
+**第 1 步 — 前置条件**
+
+- Docker 24+ 且已安装 Compose V2（执行 `docker compose version` 确认）
+- LLM Provider 的 API Key
+
+**第 2 步 — 克隆仓库**
+
+```bash
+git clone https://github.com/skylunna/luner.git
+cd luner
+```
+
+**第 3 步 — 配置 API Key**
+
+在**仓库根目录**创建 `.env` 文件：
+
+```bash
+echo "DASHSCOPE_API_KEY=sk-..."  > .env    # 阿里云百炼（DashScope / Qwen）
+# echo "OPENAI_API_KEY=sk-..."  >> .env    # OpenAI（同时取消注释 config.prod.yaml 中的 openai provider）
+```
+
+**第 4 步 — （可选）修改 Provider 配置**
+
+`deployments/production/config.prod.yaml` 已为 Qwen 预配置好。可在此切换 Provider、调整限流参数或修改缓存 TTL。luner 支持热重载，保存后即时生效，无需重启。
+
+**第 5 步 — 构建镜像**
+
+```bash
+cd deployments/production
+
+# 标准构建
+docker compose -f docker-compose.prod.yml build
+
+# 国内网络 — 使用 Go 模块镜像加速
+docker compose -f docker-compose.prod.yml build --build-arg GOPROXY=https://goproxy.cn,direct
+```
+
+> 首次构建需 3–5 分钟（编译前端 + Go 二进制）。后续启动无需重新构建，秒级拉起。
+
+**第 6 步 — 启动**
+
+```bash
+docker compose -f docker-compose.prod.yml up -d
+
+docker compose -f docker-compose.prod.yml ps         # 确认 Status = healthy
+docker compose -f docker-compose.prod.yml logs luner  # 查看启动日志
+```
+
+**第 7 步 — 验证**
+
+```bash
+# 健康检查
 curl http://localhost:8080/api/health
-curl http://localhost:8080/api/dashboard/summary
 
-# 停止并清理
-docker compose down            # 保留数据卷
-docker compose down -v         # 同时删除数据库
+# 发送一条测试请求
+curl http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer any-key" \
+  -H "X-Luner-Agent: my-app" \
+  -H "X-Luner-User: user-1" \
+  -d '{"model":"qwen-turbo","messages":[{"role":"user","content":"你好"}]}'
+
+# 浏览器打开 Web 控制台
+# http://<服务器公网IP>:8080
 ```
 
-### 方案 2：生产模式 — 接入真实 LLM Provider
+> **云服务器用户：** 请在防火墙或安全组中放行 **8080**（网关 + Web 控制台）和 **9090**（Prometheus 指标）入站端口。
 
-支持任意 OpenAI 兼容的 Provider。默认生产配置使用阿里云 Qwen；如需切换到 OpenAI 或其他 Provider，编辑 `deployments/production/config.prod.yaml` 即可。
+**日常运维**
 
 ```bash
-# 阿里云百炼（DashScope / Qwen）
-echo "DASHSCOPE_API_KEY=sk-..." > .env
-cd deployments/production
-docker compose -f docker-compose.prod.yml up -d --build
+# 查看实时日志
+docker compose -f docker-compose.prod.yml logs -f luner
 
-# OpenAI — 取消注释 config.prod.yaml 中的 openai provider，然后：
-echo "OPENAI_API_KEY=sk-..." > .env
-cd deployments/production
-docker compose -f docker-compose.prod.yml up -d --build
+# 停止网关
+docker compose -f docker-compose.prod.yml down
+
+# 更新配置无需重启 — 直接保存 config.prod.yaml，luner 自动热重载
+# 例外：server.listen / read_timeout / write_timeout 变更需重启进程
 ```
 
-### 方案 3：源码编译
+---
+
+### 源码编译
+
+需要 Go 1.26+ 和 Node 20+。
 
 ```bash
-make build                          # 构建前端 + Go 二进制
-./bin/luner --config config/config.example.yaml
+git clone https://github.com/skylunna/luner.git
+cd luner
+
+make build    # 构建前端（npm）再构建 Go 二进制 → bin/luner
+
+cp config/config.example.yaml config/config.yaml
+# 编辑 config.yaml：填入 Provider 的 base_url 和 api_key
+
+./bin/luner --config config/config.yaml
 ```
 
-### 方案 4：完整监控栈（Prometheus + Grafana + Tempo）
+---
+
+### 完整监控栈（Prometheus + Grafana + Tempo）
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
@@ -127,14 +215,18 @@ docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
 # Prometheus: http://localhost:9091
 ```
 
+---
+
 ### 常见问题
 
 | 现象 | 解决方法 |
 |---|---|
-| `seed-data` 立即退出 | 检查 `docker compose logs luner`，luner 可能仍在启动中 |
-| 8080 端口被占用 | `lsof -ti:8080 \| xargs kill`，或修改端口映射 |
-| 镜像构建失败（Go 代理） | `GOPROXY=https://goproxy.io,direct docker compose build` |
-| Dashboard 无数据 | 执行 `docker compose run --rm seed-data` 重新写入示例数据 |
+| `seed-data` 容器立即退出 | `docker compose logs luner` — luner 可能仍在启动中，等待 healthy 后重试 |
+| 8080 端口被占用 | `lsof -ti:8080 \| xargs kill`，或修改 compose 文件中的端口映射 |
+| Go 模块下载超时 | 构建命令加上 `--build-arg GOPROXY=https://goproxy.cn,direct` |
+| Dashboard 无新数据 | 相同内容的请求命中了 LRU 缓存，换一条不同的 prompt 发送，或临时将 `cache.enabled` 设为 `false` |
+| 容器反复重启 | `docker logs <容器名>` — 检查是否有 *config not found* 或 *readonly database* 错误 |
+| 重新部署后 Dashboard 无数据 | 执行 `docker compose run --rm seed-data` 重新写入演示数据 |
 
 ---
 

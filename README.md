@@ -72,52 +72,144 @@ Multi-arch binaries, multi-stage Dockerfile, `docker-compose` bundles.
 
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20Windows-lightgrey)](https://github.com/skylunna/luner/releases)
 
-### Option 1: Demo Mode — one command, instant dashboard (recommended for evaluation)
+| Path | Time | Requirements |
+|---|---|---|
+| **Demo Mode** | ~2 min | Docker only — no API key needed |
+| **Production Mode** | ~5 min | Docker + a real LLM API key |
+| **From Source** | ~5 min | Go 1.26+ and Node 20+ |
+
+---
+
+### Demo Mode — Try it in 2 minutes
+
+No API key needed. Starts a built-in mock LLM and pre-populates the dashboard with sample data.
 
 ```bash
 git clone https://github.com/skylunna/luner.git
 cd luner
 
-# Build image and start everything (mock LLM + luner + seed data)
 docker compose up -d --build
-
-# Wait ~30 seconds for the image build and seed step
-docker compose logs -f seed-data   # watch until "Demo data ready"
+docker compose logs -f seed-data    # wait for "Demo data ready"
 ```
 
-Open **http://localhost:8080** — you'll see a pre-loaded trace timeline, cost charts, and a live policy list.
+Open **http://localhost:8080** — live dashboard with traces, cost charts, and policies already loaded.
 
 ```bash
-# Verify
-curl http://localhost:8080/api/health
-curl http://localhost:8080/api/dashboard/summary
+curl http://localhost:8080/api/health    # should return {"status":"ok"}
 
-# Stop and clean up
-docker compose down            # keeps data volume
-docker compose down -v         # also removes the database
+docker compose down      # stop (keeps database)
+docker compose down -v   # stop and delete database
 ```
 
-### Option 2: Production Mode — real LLM providers
+---
 
-Supports any OpenAI-compatible provider. The default production config uses Alibaba Qwen; swap in OpenAI or any other provider by editing `deployments/production/config.prod.yaml`.
+### Production Mode — Connect to a Real LLM
+
+Supports any OpenAI-compatible provider. The default config uses Alibaba Qwen; OpenAI is one comment-toggle away in `config.prod.yaml`.
+
+**Step 1 — Prerequisites**
+
+- Docker 24+ with Compose V2 (`docker compose version` to verify)
+- An API key from your LLM provider
+
+**Step 2 — Clone the repository**
 
 ```bash
-# Copy your secrets to the project root .env file
-echo "DASHSCOPE_API_KEY=sk-..." > .env      # Alibaba Qwen
-# echo "OPENAI_API_KEY=sk-..." >> .env       # OpenAI (uncomment in config.prod.yaml)
+git clone https://github.com/skylunna/luner.git
+cd luner
+```
 
+**Step 3 — Set your API key**
+
+Create a `.env` file in the **repository root**:
+
+```bash
+echo "DASHSCOPE_API_KEY=sk-..."  > .env    # Alibaba Qwen
+# echo "OPENAI_API_KEY=sk-..."  >> .env    # OpenAI (also uncomment provider in config.prod.yaml)
+```
+
+**Step 4 — (Optional) Edit the provider config**
+
+`deployments/production/config.prod.yaml` is pre-configured for Qwen. Open it to switch providers, adjust rate limits, or change cache TTL. No restart required after edits — luner hot-reloads the file.
+
+**Step 5 — Build the image**
+
+```bash
 cd deployments/production
-docker compose -f docker-compose.prod.yml up -d --build
+
+# Standard build
+docker compose -f docker-compose.prod.yml build
+
+# Mainland China — use a faster Go module mirror
+docker compose -f docker-compose.prod.yml build --build-arg GOPROXY=https://goproxy.cn,direct
 ```
 
-### Option 3: From Source
+> First build takes 3–5 minutes (compiles the frontend + Go binary). Subsequent starts are instant.
+
+**Step 6 — Start**
 
 ```bash
-make build                          # builds web + Go binary
-./bin/luner --config config/config.example.yaml
+docker compose -f docker-compose.prod.yml up -d
+
+docker compose -f docker-compose.prod.yml ps        # confirm Status = healthy
+docker compose -f docker-compose.prod.yml logs luner # view startup logs
 ```
 
-### Option 4: With Full Monitoring Stack (Prometheus + Grafana + Tempo)
+**Step 7 — Verify**
+
+```bash
+# Health check
+curl http://localhost:8080/api/health
+
+# Send a test request
+curl http://localhost:8080/v1/chat/completions \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer any-key" \
+  -H "X-Luner-Agent: my-app" \
+  -H "X-Luner-User: user-1" \
+  -d '{"model":"qwen-turbo","messages":[{"role":"user","content":"Hello"}]}'
+
+# Open the web console
+open http://localhost:8080      # macOS
+# or visit http://<server-ip>:8080 in your browser
+```
+
+> **Cloud server?** Open ports **8080** (gateway + web console) and **9090** (Prometheus metrics) in your firewall or security group.
+
+**Day-2 operations**
+
+```bash
+# Tail live logs
+docker compose -f docker-compose.prod.yml logs -f luner
+
+# Stop the gateway
+docker compose -f docker-compose.prod.yml down
+
+# Update config without restarting — just save config.prod.yaml, luner hot-reloads it
+# Exception: server.listen / read_timeout / write_timeout require a restart
+```
+
+---
+
+### From Source
+
+Requires Go 1.26+ and Node 20+.
+
+```bash
+git clone https://github.com/skylunna/luner.git
+cd luner
+
+make build    # builds frontend (npm) then Go binary → bin/luner
+
+cp config/config.example.yaml config/config.yaml
+# Edit config.yaml: set your provider base_url and api_key
+
+./bin/luner --config config/config.yaml
+```
+
+---
+
+### With Full Monitoring Stack (Prometheus + Grafana + Tempo)
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
@@ -125,14 +217,18 @@ docker compose -f docker-compose.yml -f docker-compose.monitoring.yml up -d
 # Prometheus: http://localhost:9091
 ```
 
+---
+
 ### Troubleshooting
 
 | Symptom | Fix |
 |---|---|
-| `seed-data` exits immediately | Check `docker compose logs luner` — luner may still be starting |
-| Port 8080 already in use | `lsof -ti:8080 \| xargs kill` or change the port mapping |
-| Image build fails (Go proxy) | `GOPROXY=https://goproxy.io,direct docker compose build` |
-| No data on dashboard | Run `docker compose run --rm seed-data` to re-seed |
+| `seed-data` container exits immediately | `docker compose logs luner` — luner may still be starting; retry after it is healthy |
+| Port 8080 already in use | `lsof -ti:8080 \| xargs kill` or change the port mapping in the compose file |
+| Go module download timeout | Add `--build-arg GOPROXY=https://goproxy.cn,direct` to the build command |
+| Dashboard shows no new data | Identical requests hit the LRU cache — send a different prompt, or set `cache.enabled: false` in config |
+| Container keeps restarting | `docker logs <name>` — look for *config not found* or *readonly database* errors |
+| No data on dashboard after re-deploy | Run `docker compose run --rm seed-data` to re-seed demo data |
 
 ---
 
