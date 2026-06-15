@@ -29,7 +29,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build \
     ./cmd/luner
 
 # Stage 3: Minimal runtime image
-FROM alpine:3.20
+FROM alpine:3.24
 RUN apk --no-cache add ca-certificates tzdata curl
 
 # Non-root user
